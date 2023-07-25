@@ -32,7 +32,7 @@ class CompanyService (
     suspend fun getAllByAddress(address: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByAddress(address)
 
-    suspend fun getByName(name: String): Flow<CompanyEntity> =
+    suspend fun getAllByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
 //    suspend fun saveCompany(company: CompanyDto): CompanyEntity =
@@ -51,4 +51,7 @@ class CompanyService (
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         else companyRepository.save(company)
     }
+
+    suspend fun deleteCompany(company: CompanyEntity): Unit =
+        companyRepository.delete(company)
 }

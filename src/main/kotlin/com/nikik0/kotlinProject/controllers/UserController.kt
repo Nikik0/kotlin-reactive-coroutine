@@ -1,6 +1,9 @@
 package com.nikik0.kotlinProject.controllers
 
+import com.nikik0.kotlinProject.dtos.CompanyRequestDto
 import com.nikik0.kotlinProject.dtos.UserDto
+import com.nikik0.kotlinProject.dtos.UserRequestDto
+import com.nikik0.kotlinProject.dtos.UserResponseDto
 import com.nikik0.kotlinProject.entities.UserEntity
 import com.nikik0.kotlinProject.services.UserService
 import kotlinx.coroutines.flow.Flow
@@ -9,19 +12,22 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-private fun UserEntity.toDto(): UserDto =
-    UserDto(
+private fun UserEntity.toResponseDto(): UserResponseDto =
+    UserResponseDto(
         id = this.id,
         name = this.name,
         email = this.email,
         age = this.age,
         companyId = this.companyId
     )
-private fun UserDto.toEntity(): UserEntity =
+
+private fun UserRequestDto.toEntity(): UserEntity =
     UserEntity(
         id = this.id,
         name = this.name,
@@ -37,17 +43,25 @@ class UserController (
         ){
 
     @GetMapping("/{id}")
-    suspend fun getSingle(@PathVariable id: Long): UserDto? =
-        userService.getSingle(id)?.toDto()
+    suspend fun getSingle(@PathVariable id: Long): UserResponseDto? =
+        userService.getSingle(id)?.toResponseDto()
 
     @GetMapping("/all")
-    suspend fun getAll(): Flow<UserDto> =
-        userService.getAll().map { entity -> entity.toDto() }
+    suspend fun getAll(): Flow<UserResponseDto> =
+        userService.getAll().map { entity -> entity.toResponseDto() }
 
     @DeleteMapping("/delete")
-    suspend fun delete(@RequestParam userDto: UserDto): HttpStatus {
+    suspend fun delete(@RequestBody userDto: UserRequestDto): HttpStatus {
         userService.deleteUser(userDto.toEntity())
         if (userService.getSingle(userDto.id) == null) return HttpStatus.OK else HttpStatus.BAD_REQUEST
         return HttpStatus.OK
     }
+
+    @PostMapping("/save")
+    suspend fun saveSingle(@RequestBody userDto: UserRequestDto): UserResponseDto =
+        userService.saveUser(userDto.toEntity()).toResponseDto()
+
+    @PostMapping("/update")
+    suspend fun updateUser(@RequestBody userDto: UserRequestDto): UserResponseDto =
+        userService.updateUser(userDto.toEntity()).toResponseDto()
 }
