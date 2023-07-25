@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException
 
 @Service
 class CompanyService (
-    private var companyRepository: CompanyRepository
+    private val companyRepository: CompanyRepository
         ){
 
     suspend fun test():CompanyEntity? {
