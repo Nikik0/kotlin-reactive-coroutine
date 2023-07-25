@@ -15,9 +15,10 @@ class UserService(
     suspend fun saveUser(user: UserEntity): UserEntity =
         userRepository.save(user)
 
-    suspend fun getSingle(id: Long): UserEntity? =
+    //todo bug here
+    suspend fun getSingle(id: Long): UserEntity =
         userRepository.findById(id)
-
+            ?: let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
     suspend fun getAll(): Flow<UserEntity> =
         userRepository.findAll()
 
