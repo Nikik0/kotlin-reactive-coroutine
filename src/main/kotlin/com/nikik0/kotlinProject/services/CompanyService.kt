@@ -51,4 +51,7 @@ class CompanyService (
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         else companyRepository.save(company)
     }
+
+    suspend fun deleteCompany(company: CompanyEntity): Unit =
+        companyRepository.delete(company)
 }

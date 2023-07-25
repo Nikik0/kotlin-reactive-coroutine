@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -52,12 +53,17 @@ class CompanyController(
     }
 
     @PostMapping("/save")
-    suspend fun saveSingle(@RequestParam companyDto: CompanyDto): CompanyDto =
-        companyService.saveCompany(companyDto.toEntity()).toDto()
+    suspend fun saveSingle(@RequestBody companyDto: CompanyDto): CompanyDto {
+ println("entered save contr")
+    return companyService.saveCompany(companyDto.toEntity()).toDto()
+}
 
     @PostMapping("/update")
-    suspend fun updateSingle(@RequestParam companyDto: CompanyDto): CompanyDto =
+    suspend fun updateSingle(@RequestBody companyDto: CompanyDto): CompanyDto =
         companyService.updateCompany(companyDto.id, companyDto.toEntity()).toDto()
 
-
+    //todo should return meaningful response
+    @PostMapping("/delete")
+    suspend fun deleteSingle(@RequestBody companyDto: CompanyDto): Unit =
+        companyService.deleteCompany(companyDto.toEntity())
 }
