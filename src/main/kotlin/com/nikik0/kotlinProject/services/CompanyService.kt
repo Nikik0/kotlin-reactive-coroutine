@@ -32,7 +32,7 @@ class CompanyService (
     suspend fun getAllByAddress(address: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByAddress(address)
 
-    suspend fun getByName(name: String): Flow<CompanyEntity> =
+    suspend fun getAllByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
 //    suspend fun saveCompany(company: CompanyDto): CompanyEntity =
