@@ -40,12 +40,12 @@ private fun UserRequestDto.toEntity(): UserEntity =
 @RestController
 @RequestMapping("/api/v1/users")
 class UserController (
-    private var userService: UserService
+    private val userService: UserService
         ){
 
     @GetMapping("/{id}")
     suspend fun getSingle(@PathVariable id: Long): UserResponseDto? =
-        userService.getSingle(id)?.toResponseDto()
+        userService.getSingle(id).toResponseDto()
 
     @GetMapping("/all")
     suspend fun getAll(): Flow<UserResponseDto> =

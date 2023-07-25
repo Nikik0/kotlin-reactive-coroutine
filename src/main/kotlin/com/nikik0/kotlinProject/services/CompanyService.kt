@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException
 
 @Service
 class CompanyService (
-    private var companyRepository: CompanyRepository
+    private val companyRepository: CompanyRepository
         ){
 
     suspend fun test():CompanyEntity? {
@@ -18,16 +18,12 @@ class CompanyService (
     }
 
     //todo let untested
-    suspend fun getSingle(id: Long): CompanyEntity =
-        companyRepository.findById(id).let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
-
-//    suspend fun getAll(): Flow<CompanyEntity> = companyRepository.findAll()
-
-    suspend fun getAll(): Flow<CompanyEntity> {
-        println(companyRepository.findAll())
-        return companyRepository.findAll()
+    suspend fun getSingle(id: Long): CompanyEntity {
+        return companyRepository.findById(id)
+            ?:let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
     }
 
+    suspend fun getAll(): Flow<CompanyEntity> = companyRepository.findAll()
 
     suspend fun getAllByAddress(address: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByAddress(address)
@@ -35,11 +31,6 @@ class CompanyService (
     suspend fun getAllByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
-//    suspend fun saveCompany(company: CompanyDto): CompanyEntity =
-//
-//        val entity = CompanyEntity(id = , )
-//        companyRepository.save()
-    //todo all incoming entities should be dtos
     suspend fun saveCompany(company: CompanyEntity): CompanyEntity =
         companyRepository.findById(company.id)
             ?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST) }
