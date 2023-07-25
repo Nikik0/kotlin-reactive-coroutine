@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 private fun UserEntity.toResponseDto(): UserResponseDto =
     UserResponseDto(
@@ -62,6 +63,12 @@ class UserController (
         userService.saveUser(userDto.toEntity()).toResponseDto()
 
     @PostMapping("/update")
-    suspend fun updateUser(@RequestBody userDto: UserRequestDto): UserResponseDto =
-        userService.updateUser(userDto.toEntity()).toResponseDto()
+    suspend fun updateUser(@RequestBody userDto: UserRequestDto): UserResponseDto {
+        if (userService.getSingle(userDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return userService.updateUser(userDto.toEntity()).toResponseDto()
+    }
+
+    @GetMapping("/age/{lowerAge}/{upperAge}")
+    suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
+        userService.getAllByAgeBetween(lowerAge, upperAge).map { entity -> entity.toResponseDto() }
 }

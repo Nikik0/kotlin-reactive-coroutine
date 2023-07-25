@@ -30,6 +30,8 @@ class UserService(
     suspend fun deleteUser(user: UserEntity): Unit =
         userRepository.delete(user)
 
+    suspend fun getAllByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
+        userRepository.getAllByAgeBetween(lowerAge = lowerAge, upperAge = upperAge)
     suspend fun deleteUserById(id: Long): Unit =
         userRepository.deleteById(id)
 }
