@@ -1,6 +1,8 @@
 package com.nikik0.kotlinProject.services
 
 import com.nikik0.kotlinProject.entities.UserEntity
+import com.nikik0.kotlinProject.exceptions.InvalidRequestException
+import com.nikik0.kotlinProject.exceptions.NotFoundResponseException
 import com.nikik0.kotlinProject.repositoiries.UserRepository
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
@@ -12,8 +14,10 @@ class UserService(
         private var userRepository: UserRepository
     ) {
 
-    suspend fun saveUser(user: UserEntity): UserEntity =
-        userRepository.save(user)
+    suspend fun createUser(user: UserEntity): UserEntity =
+        userRepository.findById(user.id)
+            ?.let { throw InvalidRequestException() }
+            ?:userRepository.save(user)
 
     suspend fun getSingleUserById(id: Long): UserEntity? =
             userRepository.findById(id)
@@ -21,11 +25,8 @@ class UserService(
     suspend fun getAllUsers(): Flow<UserEntity> =
         userRepository.findAll()
 
-    suspend fun updateUser(user: UserEntity): UserEntity {
-        val foundUser = userRepository.findById(user.id)
-        return if (foundUser == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
-            else userRepository.save(user)
-    }
+    suspend fun updateUser(user: UserEntity): UserEntity =
+            userRepository.save(user)
 
     suspend fun deleteUser(user: UserEntity): Unit =
         userRepository.delete(user)

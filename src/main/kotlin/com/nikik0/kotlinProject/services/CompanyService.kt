@@ -1,6 +1,8 @@
 package com.nikik0.kotlinProject.services
 
 import com.nikik0.kotlinProject.entities.CompanyEntity
+import com.nikik0.kotlinProject.exceptions.InvalidRequestException
+import com.nikik0.kotlinProject.exceptions.NotFoundResponseException
 import com.nikik0.kotlinProject.repositoiries.CompanyRepository
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
@@ -24,17 +26,13 @@ class CompanyService (
     suspend fun getAllCompaniesByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
-    suspend fun saveCompany(company: CompanyEntity): CompanyEntity =
+    suspend fun createCompany(company: CompanyEntity): CompanyEntity =
         companyRepository.findById(company.id)
-            ?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST) }
+            ?.let { throw InvalidRequestException() }
             ?: companyRepository.save(company)
 
-    suspend fun updateCompany(id: Long, company: CompanyEntity): CompanyEntity {
-        val foundCompany = companyRepository.findById(company.id)
-        return if (foundCompany == null)
-            throw ResponseStatusException(HttpStatus.NOT_FOUND)
-        else companyRepository.save(company)
-    }
+    suspend fun updateCompany(company: CompanyEntity): CompanyEntity =
+         companyRepository.save(company)
 
     suspend fun deleteCompany(company: CompanyEntity): Unit =
         companyRepository.delete(company)

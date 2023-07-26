@@ -3,9 +3,11 @@ package com.nikik0.kotlinProject.controllers
 import com.nikik0.kotlinProject.dtos.CompanyRequestDto
 import com.nikik0.kotlinProject.dtos.CompanyResponseDto
 import com.nikik0.kotlinProject.entities.CompanyEntity
+import com.nikik0.kotlinProject.exceptions.NotFoundResponseException
 import com.nikik0.kotlinProject.services.CompanyService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEmpty
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -47,25 +49,25 @@ class CompanyController(
     suspend fun getSingleCompanyById(@PathVariable id: Long): CompanyResponseDto =
         companyService.getSingleCompany(id)
             ?.toResponseDto()
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+            ?: throw NotFoundResponseException()
 
     @GetMapping("/all")
-    suspend fun getAllCompanies(): Flow<CompanyResponseDto> {
-        return companyService.getAllCompanies().map { it.toResponseDto() }
-    }
+    suspend fun getAllCompanies(): Flow<CompanyResponseDto> =
+        companyService.getAllCompanies()
+            .onEmpty { throw NotFoundResponseException() }
+            .map { it.toResponseDto() }
 
     @PostMapping("/save")
-    suspend fun saveSingleCompany(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
-    return companyService.saveCompany(companyDto.toEntity()).toResponseDto()
-}
+    suspend fun saveSingleCompany(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto =
+        companyService.createCompany(companyDto.toEntity()).toResponseDto()
 
     @PostMapping("/update")
     suspend fun updateSingleCompany(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
-        if (companyService.getSingleCompany(companyDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
-        return companyService.updateCompany(companyDto.id, companyDto.toEntity()).toResponseDto()
+        return if (companyService.getSingleCompany(companyDto.id) == null) throw NotFoundResponseException()
+        else companyService.updateCompany(companyDto.toEntity()).toResponseDto()
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     suspend fun deleteSingleCompany(@RequestBody companyDto: CompanyRequestDto): HttpStatus {
         companyService.deleteCompany(companyDto.toEntity())
         return if (companyService.getSingleCompany(companyDto.id) == null) HttpStatus.OK
@@ -74,11 +76,15 @@ class CompanyController(
 
     @GetMapping("/find/address/{address}")
     suspend fun getAllCompaniesByAddress(@PathVariable address: String): Flow<CompanyResponseDto> =
-        companyService.getAllCompaniesByAddress(address).map { it.toResponseDto() }
+        companyService.getAllCompaniesByAddress(address)
+            .onEmpty { throw NotFoundResponseException() }
+            .map { it.toResponseDto() }
 
     @GetMapping("/find/name/{name}")
     suspend fun getAllCompaniesByName(@PathVariable name: String): Flow<CompanyResponseDto> =
-        companyService.getAllCompaniesByName(name).map { it.toResponseDto() }
+        companyService.getAllCompaniesByName(name)
+            .onEmpty { throw NotFoundResponseException() }
+            .map { it.toResponseDto() }
 
     @DeleteMapping("delete/{id}")
     suspend fun deleteCompanyById(@PathVariable id: Long): HttpStatus {

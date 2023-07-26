@@ -3,10 +3,12 @@ package com.nikik0.kotlinProject.controllers
 import com.nikik0.kotlinProject.dtos.UserRequestDto
 import com.nikik0.kotlinProject.dtos.UserResponseDto
 import com.nikik0.kotlinProject.entities.UserEntity
+import com.nikik0.kotlinProject.exceptions.NotFoundResponseException
 import com.nikik0.kotlinProject.services.UserService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEmpty
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -45,11 +47,13 @@ class UserController (
     suspend fun getSingleUserById(@PathVariable id: Long): UserResponseDto? =
         userService.getSingleUserById(id)
             ?.toResponseDto()
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+            ?: throw NotFoundResponseException()
 
     @GetMapping("/all")
     suspend fun getAllUsers(): Flow<UserResponseDto> =
-        userService.getAllUsers().map { it.toResponseDto() }
+        userService.getAllUsers()
+            .onEmpty { throw NotFoundResponseException() }
+            .map { it.toResponseDto() }
 
     @DeleteMapping("/delete")
     suspend fun deleteSingleUser(@RequestBody userDto: UserRequestDto): HttpStatus {
@@ -59,17 +63,19 @@ class UserController (
 
     @PostMapping("/save")
     suspend fun saveSingleUser(@RequestBody userDto: UserRequestDto): UserResponseDto =
-        userService.saveUser(userDto.toEntity()).toResponseDto()
+        userService.createUser(userDto.toEntity()).toResponseDto()
 
     @PostMapping("/update")
     suspend fun updateSingleUser(@RequestBody userDto: UserRequestDto): UserResponseDto {
-        if (userService.getSingleUserById(userDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        if (userService.getSingleUserById(userDto.id) == null) throw NotFoundResponseException()
         return userService.updateUser(userDto.toEntity()).toResponseDto()
     }
 
     @GetMapping("/age/{lowerAge}/{upperAge}")
     suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
-        userService.getAllUSersByAgeBetween(lowerAge, upperAge).map { it.toResponseDto() }
+        userService.getAllUSersByAgeBetween(lowerAge, upperAge)
+            .onEmpty { throw NotFoundResponseException() }
+            .map { it.toResponseDto() }
 
     @GetMapping("/find/email/{email}")
     suspend fun getUserByEmail(@PathVariable email: String): UserResponseDto =
