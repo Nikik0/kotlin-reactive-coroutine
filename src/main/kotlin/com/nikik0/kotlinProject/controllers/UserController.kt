@@ -5,6 +5,7 @@ import com.nikik0.kotlinProject.dtos.UserResponseDto
 import com.nikik0.kotlinProject.entities.UserEntity
 import com.nikik0.kotlinProject.services.UserService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -69,4 +70,12 @@ class UserController (
     @GetMapping("/age/{lowerAge}/{upperAge}")
     suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
         userService.getAllByAgeBetween(lowerAge, upperAge).map { it.toResponseDto() }
+
+    @GetMapping("/find/email/{email}")
+    suspend fun getByEmail(@PathVariable email: String): UserResponseDto =
+        userService.findUserByEmail(email)
+            .firstOrNull()
+            ?.toResponseDto()
+            ?:throw ResponseStatusException(HttpStatus.NOT_FOUND)
+
 }

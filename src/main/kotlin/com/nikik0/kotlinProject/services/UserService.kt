@@ -34,4 +34,7 @@ class UserService(
         userRepository.getAllByAgeBetween(lowerAge, upperAge)
     suspend fun deleteUserById(id: Long): Unit =
         userRepository.deleteById(id)
+
+    suspend fun findUserByEmail(email: String): Flow<UserEntity> =
+        userRepository.getByEmail(email)
 }

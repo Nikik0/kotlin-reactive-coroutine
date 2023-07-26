@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserRepository: CoroutineCrudRepository<UserEntity, Long> {
-    //fun deleteById(id: Long): Boolean
-
     fun getAllByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity>
+    fun getByEmail(email: String): Flow<UserEntity>
 }
