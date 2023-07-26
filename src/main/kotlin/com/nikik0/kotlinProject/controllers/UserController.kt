@@ -78,4 +78,9 @@ class UserController (
             ?.toResponseDto()
             ?:throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
+    @DeleteMapping("/delete/{id}")
+    suspend fun deleteById(@PathVariable id: Long): HttpStatus {
+        userService.deleteUserById(id)
+        return if (userService.getSingle(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
+    }
 }

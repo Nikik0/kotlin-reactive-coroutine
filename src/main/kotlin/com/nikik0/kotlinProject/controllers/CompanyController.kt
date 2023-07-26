@@ -7,6 +7,7 @@ import com.nikik0.kotlinProject.services.CompanyService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -78,5 +79,11 @@ class CompanyController(
     @GetMapping("/find/name/{name}")
     suspend fun getAllByName(@PathVariable name: String): Flow<CompanyResponseDto> =
         companyService.getAllByName(name).map { it.toResponseDto() }
+
+    @DeleteMapping("delete/{id}")
+    suspend fun deleteById(@PathVariable id: Long): HttpStatus {
+        companyService.deleteCompanyById(id)
+        return if (companyService.getSingle(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
+    }
 
 }

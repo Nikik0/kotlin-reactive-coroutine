@@ -12,12 +12,6 @@ class CompanyService (
     private val companyRepository: CompanyRepository
         ){
 
-    suspend fun test():CompanyEntity? {
-        println("entered")
-        return companyRepository.getTest()
-    }
-
-    //todo let untested
     suspend fun getSingle(id: Long): CompanyEntity? {
         return companyRepository.findById(id)
     }
@@ -44,4 +38,7 @@ class CompanyService (
 
     suspend fun deleteCompany(company: CompanyEntity): Unit =
         companyRepository.delete(company)
+
+    suspend fun deleteCompanyById(id: Long): Unit =
+        companyRepository.deleteById(id)
 }
