@@ -12,16 +12,16 @@ class CompanyService (
     private val companyRepository: CompanyRepository
         ){
 
-    suspend fun getSingle(id: Long): CompanyEntity? {
+    suspend fun getSingleCompany(id: Long): CompanyEntity? {
         return companyRepository.findById(id)
     }
 
-    suspend fun getAll(): Flow<CompanyEntity> = companyRepository.findAll()
+    suspend fun getAllCompanies(): Flow<CompanyEntity> = companyRepository.findAll()
 
-    suspend fun getAllByAddress(address: String): Flow<CompanyEntity> =
+    suspend fun getAllCompaniesByAddress(address: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByAddress(address)
 
-    suspend fun getAllByName(name: String): Flow<CompanyEntity> =
+    suspend fun getAllCompaniesByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
     suspend fun saveCompany(company: CompanyEntity): CompanyEntity =

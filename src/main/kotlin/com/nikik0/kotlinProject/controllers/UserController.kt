@@ -42,45 +42,45 @@ class UserController (
         ){
 
     @GetMapping("/{id}")
-    suspend fun getSingle(@PathVariable id: Long): UserResponseDto? =
-        userService.getSingle(id)
+    suspend fun getSingleUserById(@PathVariable id: Long): UserResponseDto? =
+        userService.getSingleUserById(id)
             ?.toResponseDto()
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
     @GetMapping("/all")
-    suspend fun getAll(): Flow<UserResponseDto> =
-        userService.getAll().map { it.toResponseDto() }
+    suspend fun getAllUsers(): Flow<UserResponseDto> =
+        userService.getAllUsers().map { it.toResponseDto() }
 
     @DeleteMapping("/delete")
-    suspend fun delete(@RequestBody userDto: UserRequestDto): HttpStatus {
+    suspend fun deleteSingleUser(@RequestBody userDto: UserRequestDto): HttpStatus {
         userService.deleteUser(userDto.toEntity())
-        return if (userService.getSingle(userDto.id) == null) HttpStatus.OK else HttpStatus.BAD_REQUEST
+        return if (userService.getSingleUserById(userDto.id) == null) HttpStatus.OK else HttpStatus.BAD_REQUEST
     }
 
     @PostMapping("/save")
-    suspend fun saveSingle(@RequestBody userDto: UserRequestDto): UserResponseDto =
+    suspend fun saveSingleUser(@RequestBody userDto: UserRequestDto): UserResponseDto =
         userService.saveUser(userDto.toEntity()).toResponseDto()
 
     @PostMapping("/update")
-    suspend fun updateUser(@RequestBody userDto: UserRequestDto): UserResponseDto {
-        if (userService.getSingle(userDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    suspend fun updateSingleUser(@RequestBody userDto: UserRequestDto): UserResponseDto {
+        if (userService.getSingleUserById(userDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
         return userService.updateUser(userDto.toEntity()).toResponseDto()
     }
 
     @GetMapping("/age/{lowerAge}/{upperAge}")
     suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
-        userService.getAllByAgeBetween(lowerAge, upperAge).map { it.toResponseDto() }
+        userService.getAllUSersByAgeBetween(lowerAge, upperAge).map { it.toResponseDto() }
 
     @GetMapping("/find/email/{email}")
-    suspend fun getByEmail(@PathVariable email: String): UserResponseDto =
-        userService.findUserByEmail(email)
+    suspend fun getUserByEmail(@PathVariable email: String): UserResponseDto =
+        userService.getUserByEmail(email)
             .firstOrNull()
             ?.toResponseDto()
             ?:throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
     @DeleteMapping("/delete/{id}")
-    suspend fun deleteById(@PathVariable id: Long): HttpStatus {
+    suspend fun deleteUserById(@PathVariable id: Long): HttpStatus {
         userService.deleteUserById(id)
-        return if (userService.getSingle(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
+        return if (userService.getSingleUserById(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
     }
 }

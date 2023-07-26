@@ -15,10 +15,10 @@ class UserService(
     suspend fun saveUser(user: UserEntity): UserEntity =
         userRepository.save(user)
 
-    suspend fun getSingle(id: Long): UserEntity? =
+    suspend fun getSingleUserById(id: Long): UserEntity? =
             userRepository.findById(id)
 
-    suspend fun getAll(): Flow<UserEntity> =
+    suspend fun getAllUsers(): Flow<UserEntity> =
         userRepository.findAll()
 
     suspend fun updateUser(user: UserEntity): UserEntity {
@@ -30,11 +30,11 @@ class UserService(
     suspend fun deleteUser(user: UserEntity): Unit =
         userRepository.delete(user)
 
-    suspend fun getAllByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
+    suspend fun getAllUSersByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
         userRepository.getAllByAgeBetween(lowerAge, upperAge)
     suspend fun deleteUserById(id: Long): Unit =
         userRepository.deleteById(id)
 
-    suspend fun findUserByEmail(email: String): Flow<UserEntity> =
+    suspend fun getUserByEmail(email: String): Flow<UserEntity> =
         userRepository.getByEmail(email)
 }

@@ -40,50 +40,50 @@ class CompanyController(
     @GetMapping("/test")
     suspend fun test(): CompanyEntity? {
         println("test is entered")
-        return companyService.getSingle(1)
+        return companyService.getSingleCompany(1)
     }
 
     @GetMapping("/{id}")
-    suspend fun getSingleById(@PathVariable id: Long): CompanyResponseDto =
-        companyService.getSingle(id)
+    suspend fun getSingleCompanyById(@PathVariable id: Long): CompanyResponseDto =
+        companyService.getSingleCompany(id)
             ?.toResponseDto()
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
     @GetMapping("/all")
-    suspend fun getAll(): Flow<CompanyResponseDto> {
-        return companyService.getAll().map { it.toResponseDto() }
+    suspend fun getAllCompanies(): Flow<CompanyResponseDto> {
+        return companyService.getAllCompanies().map { it.toResponseDto() }
     }
 
     @PostMapping("/save")
-    suspend fun saveSingle(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
+    suspend fun saveSingleCompany(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
     return companyService.saveCompany(companyDto.toEntity()).toResponseDto()
 }
 
     @PostMapping("/update")
-    suspend fun updateSingle(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
-        if (companyService.getSingle(companyDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    suspend fun updateSingleCompany(@RequestBody companyDto: CompanyRequestDto): CompanyResponseDto {
+        if (companyService.getSingleCompany(companyDto.id) == null) throw ResponseStatusException(HttpStatus.NOT_FOUND)
         return companyService.updateCompany(companyDto.id, companyDto.toEntity()).toResponseDto()
     }
 
     @PostMapping("/delete")
-    suspend fun deleteSingle(@RequestBody companyDto: CompanyRequestDto): HttpStatus {
+    suspend fun deleteSingleCompany(@RequestBody companyDto: CompanyRequestDto): HttpStatus {
         companyService.deleteCompany(companyDto.toEntity())
-        return if (companyService.getSingle(companyDto.id) == null) HttpStatus.OK
+        return if (companyService.getSingleCompany(companyDto.id) == null) HttpStatus.OK
         else HttpStatus.BAD_REQUEST
     }
 
     @GetMapping("/find/address/{address}")
-    suspend fun getAllByAddress(@PathVariable address: String): Flow<CompanyResponseDto> =
-        companyService.getAllByAddress(address).map { it.toResponseDto() }
+    suspend fun getAllCompaniesByAddress(@PathVariable address: String): Flow<CompanyResponseDto> =
+        companyService.getAllCompaniesByAddress(address).map { it.toResponseDto() }
 
     @GetMapping("/find/name/{name}")
-    suspend fun getAllByName(@PathVariable name: String): Flow<CompanyResponseDto> =
-        companyService.getAllByName(name).map { it.toResponseDto() }
+    suspend fun getAllCompaniesByName(@PathVariable name: String): Flow<CompanyResponseDto> =
+        companyService.getAllCompaniesByName(name).map { it.toResponseDto() }
 
     @DeleteMapping("delete/{id}")
-    suspend fun deleteById(@PathVariable id: Long): HttpStatus {
+    suspend fun deleteCompanyById(@PathVariable id: Long): HttpStatus {
         companyService.deleteCompanyById(id)
-        return if (companyService.getSingle(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
+        return if (companyService.getSingleCompany(id) == null) HttpStatus.OK else HttpStatus.NOT_FOUND
     }
 
 }
