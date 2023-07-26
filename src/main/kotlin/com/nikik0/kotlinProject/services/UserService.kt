@@ -15,10 +15,9 @@ class UserService(
     suspend fun saveUser(user: UserEntity): UserEntity =
         userRepository.save(user)
 
-    //todo bug here
-    suspend fun getSingle(id: Long): UserEntity =
-        userRepository.findById(id)
-            ?: let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
+    suspend fun getSingle(id: Long): UserEntity? =
+            userRepository.findById(id)
+
     suspend fun getAll(): Flow<UserEntity> =
         userRepository.findAll()
 
@@ -32,7 +31,7 @@ class UserService(
         userRepository.delete(user)
 
     suspend fun getAllByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
-        userRepository.getAllByAgeBetween(lowerAge = lowerAge, upperAge = upperAge)
+        userRepository.getAllByAgeBetween(lowerAge, upperAge)
     suspend fun deleteUserById(id: Long): Unit =
         userRepository.deleteById(id)
 }

@@ -1,6 +1,5 @@
 package com.nikik0.kotlinProject.controllers
 
-import com.nikik0.kotlinProject.dtos.CompanyDto
 import com.nikik0.kotlinProject.dtos.CompanyRequestDto
 import com.nikik0.kotlinProject.dtos.CompanyResponseDto
 import com.nikik0.kotlinProject.entities.CompanyEntity
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -39,19 +37,20 @@ class CompanyController(
 ) {
 
     @GetMapping("/test")
-    suspend fun test(): CompanyEntity {
+    suspend fun test(): CompanyEntity? {
         println("test is entered")
         return companyService.getSingle(1)
     }
 
     @GetMapping("/{id}")
     suspend fun getSingleById(@PathVariable id: Long): CompanyResponseDto =
-        companyService.getSingle(id).toResponseDto() //todo fighting nulls here might be a bad idea
-
+        companyService.getSingle(id)
+            ?.toResponseDto()
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
     @GetMapping("/all")
     suspend fun getAll(): Flow<CompanyResponseDto> {
-        return companyService.getAll().map { entity -> entity.toResponseDto() }
+        return companyService.getAll().map { it.toResponseDto() }
     }
 
     @PostMapping("/save")
@@ -74,13 +73,10 @@ class CompanyController(
 
     @GetMapping("/find/address/{address}")
     suspend fun getAllByAddress(@PathVariable address: String): Flow<CompanyResponseDto> =
-        companyService.getAllByAddress(address).map { entity -> entity.toResponseDto() }
+        companyService.getAllByAddress(address).map { it.toResponseDto() }
 
     @GetMapping("/find/name/{name}")
     suspend fun getAllByName(@PathVariable name: String): Flow<CompanyResponseDto> =
-        companyService.getAllByName(name).map { entity -> entity.toResponseDto() }
+        companyService.getAllByName(name).map { it.toResponseDto() }
 
-
-    suspend fun tt(@RequestBody companyEntity: CompanyEntity): CompanyEntity =
-        companyService.saveCompany(company = companyEntity)
 }

@@ -14,13 +14,12 @@ class CompanyService (
 
     suspend fun test():CompanyEntity? {
         println("entered")
-        return companyRepository.getTest()//companyRepository.findById(1)
+        return companyRepository.getTest()
     }
 
     //todo let untested
-    suspend fun getSingle(id: Long): CompanyEntity {
+    suspend fun getSingle(id: Long): CompanyEntity? {
         return companyRepository.findById(id)
-            ?:let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
     }
 
     suspend fun getAll(): Flow<CompanyEntity> = companyRepository.findAll()

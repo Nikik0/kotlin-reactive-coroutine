@@ -1,7 +1,5 @@
 package com.nikik0.kotlinProject.controllers
 
-import com.nikik0.kotlinProject.dtos.CompanyRequestDto
-import com.nikik0.kotlinProject.dtos.UserDto
 import com.nikik0.kotlinProject.dtos.UserRequestDto
 import com.nikik0.kotlinProject.dtos.UserResponseDto
 import com.nikik0.kotlinProject.entities.UserEntity
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -45,17 +42,18 @@ class UserController (
 
     @GetMapping("/{id}")
     suspend fun getSingle(@PathVariable id: Long): UserResponseDto? =
-        userService.getSingle(id).toResponseDto()
+        userService.getSingle(id)
+            ?.toResponseDto()
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
     @GetMapping("/all")
     suspend fun getAll(): Flow<UserResponseDto> =
-        userService.getAll().map { entity -> entity.toResponseDto() }
+        userService.getAll().map { it.toResponseDto() }
 
     @DeleteMapping("/delete")
     suspend fun delete(@RequestBody userDto: UserRequestDto): HttpStatus {
         userService.deleteUser(userDto.toEntity())
-        if (userService.getSingle(userDto.id) == null) return HttpStatus.OK else HttpStatus.BAD_REQUEST
-        return HttpStatus.OK
+        return if (userService.getSingle(userDto.id) == null) HttpStatus.OK else HttpStatus.BAD_REQUEST
     }
 
     @PostMapping("/save")
@@ -70,5 +68,5 @@ class UserController (
 
     @GetMapping("/age/{lowerAge}/{upperAge}")
     suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
-        userService.getAllByAgeBetween(lowerAge, upperAge).map { entity -> entity.toResponseDto() }
+        userService.getAllByAgeBetween(lowerAge, upperAge).map { it.toResponseDto() }
 }
