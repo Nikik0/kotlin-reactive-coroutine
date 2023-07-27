@@ -1,6 +1,8 @@
 package com.nikik0.kotlinProject.services
 
 import com.nikik0.kotlinProject.entities.CompanyEntity
+import com.nikik0.kotlinProject.exceptions.InvalidRequestException
+import com.nikik0.kotlinProject.exceptions.NotFoundResponseException
 import com.nikik0.kotlinProject.repositoiries.CompanyRepository
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
@@ -12,37 +14,29 @@ class CompanyService (
     private val companyRepository: CompanyRepository
         ){
 
-    suspend fun test():CompanyEntity? {
-        println("entered")
-        return companyRepository.getTest()//companyRepository.findById(1)
-    }
-
-    //todo let untested
-    suspend fun getSingle(id: Long): CompanyEntity {
+    suspend fun getSingleCompany(id: Long): CompanyEntity? {
         return companyRepository.findById(id)
-            ?:let { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
     }
 
-    suspend fun getAll(): Flow<CompanyEntity> = companyRepository.findAll()
+    suspend fun getAllCompanies(): Flow<CompanyEntity> = companyRepository.findAll()
 
-    suspend fun getAllByAddress(address: String): Flow<CompanyEntity> =
+    suspend fun getAllCompaniesByAddress(address: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByAddress(address)
 
-    suspend fun getAllByName(name: String): Flow<CompanyEntity> =
+    suspend fun getAllCompaniesByName(name: String): Flow<CompanyEntity> =
         companyRepository.getCompanyEntitiesByName(name)
 
-    suspend fun saveCompany(company: CompanyEntity): CompanyEntity =
+    suspend fun createCompany(company: CompanyEntity): CompanyEntity =
         companyRepository.findById(company.id)
-            ?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST) }
+            ?.let { throw InvalidRequestException() }
             ?: companyRepository.save(company)
 
-    suspend fun updateCompany(id: Long, company: CompanyEntity): CompanyEntity {
-        val foundCompany = companyRepository.findById(company.id)
-        return if (foundCompany == null)
-            throw ResponseStatusException(HttpStatus.NOT_FOUND)
-        else companyRepository.save(company)
-    }
+    suspend fun updateCompany(company: CompanyEntity): CompanyEntity =
+         companyRepository.save(company)
 
     suspend fun deleteCompany(company: CompanyEntity): Unit =
         companyRepository.delete(company)
+
+    suspend fun deleteCompanyById(id: Long): Unit =
+        companyRepository.deleteById(id)
 }
