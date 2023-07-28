@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository
 interface UserRepository: CoroutineCrudRepository<UserEntity, Long> {
     fun getAllByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity>
     fun getByEmail(email: String): Flow<UserEntity>
+    fun findAllByNameContainingIgnoreCase(name: String): Flow<UserEntity>
+    fun findAllByCompanyId(companyId: Long): Flow<UserEntity>
 }

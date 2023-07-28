@@ -31,11 +31,17 @@ class UserService(
     suspend fun deleteUser(user: UserEntity): Unit =
         userRepository.delete(user)
 
-    suspend fun getAllUSersByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
+    suspend fun getAllUsersByAgeBetween(lowerAge: Int, upperAge: Int): Flow<UserEntity> =
         userRepository.getAllByAgeBetween(lowerAge, upperAge)
     suspend fun deleteUserById(id: Long): Unit =
         userRepository.deleteById(id)
 
     suspend fun getUserByEmail(email: String): Flow<UserEntity> =
         userRepository.getByEmail(email)
+
+    suspend fun getAllUsersByNameWith(name: String): Flow<UserEntity> =
+        userRepository.findAllByNameContainingIgnoreCase(name)
+
+    suspend fun getAllUsersByCompanyId(companyId: Long): Flow<UserEntity> =
+        userRepository.findAllByCompanyId(companyId)
 }
