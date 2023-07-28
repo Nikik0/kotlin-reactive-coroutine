@@ -39,4 +39,7 @@ class CompanyService (
 
     suspend fun deleteCompanyById(id: Long): Unit =
         companyRepository.deleteById(id)
+
+    suspend fun getAllCompaniesByNameWith(name: String): Flow<CompanyEntity> =
+        companyRepository.findAllByNameContainingIgnoreCase(name)
 }

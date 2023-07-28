@@ -73,7 +73,7 @@ class UserController (
 
     @GetMapping("/age/{lowerAge}/{upperAge}")
     suspend fun getAllByAgeBetween(@PathVariable lowerAge: Int, @PathVariable upperAge: Int): Flow<UserResponseDto> =
-        userService.getAllUSersByAgeBetween(lowerAge, upperAge)
+        userService.getAllUsersByAgeBetween(lowerAge, upperAge)
             .onEmpty { throw NotFoundResponseException() }
             .map { it.toResponseDto() }
 

@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository
 interface CompanyRepository: CoroutineCrudRepository<CompanyEntity, Long> {
     fun getCompanyEntitiesByAddress(address: String): Flow<CompanyEntity>
     fun getCompanyEntitiesByName(name: String): Flow<CompanyEntity>
-
+    fun findAllByNameContainingIgnoreCase(name: String): Flow<CompanyEntity>
 }
