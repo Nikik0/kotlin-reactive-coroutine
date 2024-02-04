@@ -39,8 +39,8 @@ class SearchController(
 
     @GetMapping("/{name}")
     suspend fun searchByName(@PathVariable name: String): Flow<BaseResponse> {
-        var users = userService.getAllUsersByNameWith(name).map { it.toBaseResponse() }
-        var companies = companyService.getAllCompaniesByNameWith(name).map { it.toBaseResponse() }
+        val users = userService.getAllUsersByNameWith(name).map { it.toBaseResponse() }
+        val companies = companyService.getAllCompaniesByNameWith(name).map { it.toBaseResponse() }
         return merge(users, companies).onEmpty { throw NotFoundResponseException() }
     }
 }
