@@ -5,8 +5,8 @@ Minimalistic crud project demostraiting building service using spring webflux an
 ## Description
 
 Used technologies:
-* Kotlin
-* Spring boot
+* Kotlin 1.8
+* Spring boot 3.1
 * Webflux
 * Coroutines
 * PostgreSQL (r2dbc driver)
